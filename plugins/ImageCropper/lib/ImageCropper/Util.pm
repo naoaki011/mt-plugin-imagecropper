@@ -135,7 +135,7 @@ sub find_prototype_id {
 sub find_cropped_asset {
     my ( $blog_id, $asset, $label ) = @_;
     $blog_id    = 0 unless ( $blog_id && $blog_id ne '' );
-    my $blog    = MT->model('blog')->find($blog_id);
+    my $blog    = MT->model('blog')->load($blog_id);
     my $ts      = $blog->template_set;
 
     my $map;
