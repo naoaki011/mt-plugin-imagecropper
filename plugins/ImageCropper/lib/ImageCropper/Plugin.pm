@@ -9,7 +9,7 @@ use warnings;
 use Carp qw( croak longmess confess );
 use MT::Util qw(    relative_date   ts2epoch format_ts     caturl
                  offset_time_list   epoch2ts offset_time          );
-use ImageCropper::Util qw( crop_filename crop_image annotate file_size );
+use ImageCropper::Util qw( crop_filename crop_image annotate file_size find_cropped_asset );
 use Sub::Install;
 
 # use MT::Log::Log4perl qw( l4mtdump ); use Log::Log4perl qw( :resurrect ); my $logger ||= MT::Log::Log4perl->new();
@@ -159,9 +159,8 @@ sub hdlr_cropped_asset {
 
     my $blog_id = defined $args->{blog_id}  ? $args->{blog_id}
                 : defined $a->blog_id       ? $a->blog_id
-                : ref $blog                 ? $blog->id
-
-    my $ts      = $blog->template_set;
+                : ref $blog                 ? $blog->id 
+                : 0;
 
     my $out;
     my $cropped_asset = find_cropped_asset($blog_id,$a,$l);
@@ -176,7 +175,8 @@ sub hdlr_cropped_asset {
 sub _hdlr_pass_tokens_else {
     my ( $ctx, $args, $cond ) = @_;
     my $b = $ctx->stash('builder');
-    defined( my $out = $b->build( $ctx, $ctx->stash('tokens_else'), $cond ) )
+    my $out;
+    defined( $out = $b->build( $ctx, $ctx->stash('tokens_else'), $cond ) )
       or return $ctx->error( $b->errstr );
     return $out;
 }
