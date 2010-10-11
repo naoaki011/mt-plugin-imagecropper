@@ -23,6 +23,7 @@
         #main-content { padding-top: 5px; }
         .content-nav #main-content .msg { margin-left: 0px; }
         .listing-header { padding: 5px 0 10px 10px; }
+        .listing th { width: 30%; }
     </style>
 </mt:setvarblock>
 
@@ -46,22 +47,23 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="action_buttons">
-    <a href="javascript:void(0)"
+    <button
         onclick="doForMarkedInThisWindow(
             getByID('prototypes-listing-form'),
             '<__trans phrase="prototype">', '<__trans phrase="prototypes">', 
             'id', 'delete_prototype'); return false;"
         accesskey="d"
         title="<__trans phrase="Delete selected prototypes (d)">"
-        ><__trans phrase="Delete"></a>
+        ><__trans phrase="Delete"></button>
   <!-- more buttons here if you wish -->
 </mt:setvarblock>
 
 <$mt:include name="include/header.tmpl"$>
 
 <mt:setvarblock name="listing_header">
-<h3>Custom Thumbnail Prototypes</h3>
-    <p id="create-new-link"><a href="javascript:void(0)" onclick="openDialog(null,'edit_prototype','blog_id=<mt:var name="blog_id">');return false;" class="icon-left icon-create"><__trans phrase="Create Thumbnail Prototype"></a></p>
+<h3><__trans phrase="Custom Thumbnail Prototypes"></h3>
+<mt:ignore><p id="create-new-link"><a href="javascript:void(0)" onclick="openDialog(null,'edit_prototype','blog_id=<mt:var name="blog_id">');return false;" class="icon-left icon-create"><__trans phrase="Create Thumbnail Prototype"></a></p></mt:ignore>
+    <p id="create-new-link"><a href="<mt:var ="script_url">?__mode=edit_prototype&blog_id=<mt:var name="blog_id">" class="mt-open-dialog icon-left icon-create"><__trans phrase="Create Thumbnail Prototype"></a></p>
 </mt:setvarblock>
 
 <mtapp:listing type="prototypes" default="<__trans phrase="No custom thumbnail prototypes could be found.">" empty_message="<__trans phrase="No custom thumbnail prototypes could be found.">" hide_pager="1" class="show_all">
@@ -79,7 +81,8 @@
     </mt:if>
         <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
             <td class="cb"><input type="checkbox" name="id" value="<mt:var name="id">" class="select" /></td>
-            <td><a href="javascript:void(0)" onclick="openDialog(null,'edit_prototype','blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="id">');return false;" class=""><mt:var name="label" escape="html"></a></td>
+<mt:ignore><td><a href="javascript:void(0)" onclick="openDialog(null,'edit_prototype','blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="id">');return false;" class=""><mt:var name="label" escape="html"></a></td></mt:ignore>
+            <td><a href="<mt:var ="script_url">?__mode=edit_prototype&blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="id">" class="mt-open-dialog"><mt:var name="label" escape="html"></a></td>
             <td><mt:var name="max_width" escape="html"></td>
             <td><mt:var name="max_height" escape="html"></td>
             <td>
@@ -113,7 +116,7 @@
 <mt:if name="prototype_loop">
 <mt:setvarblock name="action_buttons"></mt:setvarblock>
 <mt:setvarblock name="listing_header">
-<h3>Thumbnail Prototypes for <mt:var name="template_set_name"></h3>
+<h3><__trans phrase="Thumbnail Prototypes for [_1]" params="<mt:var name="template_set_name">"></h3>
 </mt:setvarblock>
 <mtapp:listing loop="prototype_loop" type="tsprototypes" default="<__trans phrase="No thumbnail prototypes could be found.">" empty_message="<__trans phrase="No thumbnail prototypes could be found.">" hide_pager="1" class="show_all">
     <mt:if name="__first__">

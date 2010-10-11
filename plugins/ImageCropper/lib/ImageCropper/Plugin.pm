@@ -480,11 +480,13 @@ sub crop {
     $cache_url =~ s!%a!$archiveurl!;
     my $cropped_path =
       File::Spec->catfile( $cache_path, @cropped_file_parts );
+    $cropped_path =~ s{\\}{/}g;
+#    MT->log({ blog_id => $blog->id, message => "Cropped filename: $cropped_path" });
 
-#MT->log({ blog_id => $blog->id, message => "Cropped filename: $cropped_path" });
     my $cropped_url = caturl( $cache_url, @cropped_file_parts );
+    $cropped_url =~ s{\\}{/}g;
+#    MT->log({ blog_id => $blog->id, message => "Cropped URL: $cropped_url" });
 
-   #MT->log({ blog_id => $blog->id, message => "Cropped URL: $cropped_url" });
     my ( $base, $path, $ext ) =
       File::Basename::fileparse( File::Spec->catfile(@cropped_file_parts),
         qr/[A-Za-z0-9]+$/ );

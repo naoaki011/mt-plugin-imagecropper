@@ -36,7 +36,7 @@ sub crop_image {
         'y'      => $y,
     );
     if ($qual) {
-        MT->log( { message => "Quality of image: $qual" } );
+        #MT->log( { message => "Quality of image: $qual" } );
         $magick->Set( quality => $qual );
     }
     return $image->error(

@@ -72,6 +72,11 @@ applications:
         mode: list_prototypes
         order: 500
         view: blog
+      design:image_cropper:
+        label: Thumbnail Prototypes
+        mode: list_prototypes
+        order: 500
+        view: [ 'blog', 'website' ]
     methods:
       list_prototypes: $ImageCropper::ImageCropper::Plugin::list_prototypes
       edit_prototype: $ImageCropper::ImageCropper::Plugin::edit_prototype
@@ -86,4 +91,5 @@ applications:
           label: 'Generate Thumbnails'
           order: 100
           mode: manage_thumbnails
+          permission: edit_assets, upload
           condition: $ImageCropper::ImageCropper::Util::asset_is_image
