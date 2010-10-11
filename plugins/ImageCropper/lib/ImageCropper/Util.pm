@@ -168,5 +168,24 @@ sub find_cropped_asset {
     return undef;
 }
 
+sub asset_is_image {
+    my $asset = shift;
+    my $class = $asset->class;
+    my $parent = $asset->parent;
+    if (($class eq 'image')&&($parent eq '')) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+sub doLog {
+    my ($msg) = @_; 
+    return unless defined($msg);
+    require MT::Log;
+    my $log = MT::Log->new;
+    $log->message($msg) ;
+    $log->save or die $log->errstr;
+}
 
 1;

@@ -86,3 +86,4 @@ applications:
           label: 'Generate Thumbnails'
           order: 100
           mode: manage_thumbnails
+          condition: $ImageCropper::ImageCropper::Util::asset_is_image
