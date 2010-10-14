@@ -18,8 +18,8 @@
     var selected  = 0;
 <mt:loop name="prototype_loop">
     protos['<$mt:var name="proto_key"$>'] = {
-      'max_width' : <$mt:var name="max_width"$>,
-      'max_height': <$mt:var name="max_height"$>,
+      'max_width' : <$mt:var name="max_width" default="0"$>,
+      'max_height': <$mt:var name="max_height" default="0"$>,
       'label'     : '<$mt:var name="proto_label" encode_js="1"$>',
       'size'      : '<$mt:var name="cropped_size"$>',
       'x'         : <$mt:var name="cropped_x" default="0"$>,
