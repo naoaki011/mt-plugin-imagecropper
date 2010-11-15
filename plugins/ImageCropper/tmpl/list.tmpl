@@ -122,17 +122,21 @@
     <mt:if name="__first__">
     <thead>
         <tr>
+            <th class="cb">&nbsp;</th>
             <th id="l-lbl"><__trans phrase="Label"></th>
             <th id="l-mxw"><__trans phrase="Max Width"></th>
             <th id="l-mxh"><__trans phrase="Max Height"></th>
+            <th>&nbsp;</th>
         </tr>
     </thead>
     <tbody>
     </mt:if>
         <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+            <td>&nbsp;</td>
             <td><mt:var name="label" escape="html"></td>
             <td><mt:var name="max_width" escape="html"></td>
             <td><mt:var name="max_height" escape="html"></td>
+            <td>&nbsp;</td>
         </tr>
     <mt:if name="__last__">
     </tbody>
