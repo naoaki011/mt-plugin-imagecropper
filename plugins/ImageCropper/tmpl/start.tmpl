@@ -157,6 +157,14 @@
             accesskey="s"
             title="<__trans phrase="Return to the asset editing screen">"
             onclick="location.href = '?__mode=view&_type=asset&id=<$mt:AssetID$>&blog_id=<$mt:BlogID$>';"><__trans phrase="Return to asset"></button>
+<mt:if name="has_prototypes">
+        <button
+            style="float: right"
+            type="button"
+            class="action"
+            title="<__trans phrase="Edit Prototypes">"
+            onclick="location.href = '?__mode=list_prototypes&blog_id=<$mt:var name="blog_id"$>';"><__trans phrase="Edit Prototypes"></button>
+</mt:if>
       </div>
     </div>
 
