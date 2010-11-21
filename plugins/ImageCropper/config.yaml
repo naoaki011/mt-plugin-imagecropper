@@ -67,16 +67,20 @@ object_types:
 applications:
   cms:
     menus: 
+      # for MT4.x
       prefs:image_cropper:
         label: Thumbnail Prototypes
         mode: list_prototypes
         order: 500
         view: blog
+      # for MT5.x
       design:image_cropper:
         label: Thumbnail Prototypes
         mode: list_prototypes
         order: 500
-        view: [ 'blog', 'website' ]
+        view: 
+          - blog
+          - website
     methods:
       list_prototypes: $ImageCropper::ImageCropper::Plugin::list_prototypes
       edit_prototype: $ImageCropper::ImageCropper::Plugin::edit_prototype
