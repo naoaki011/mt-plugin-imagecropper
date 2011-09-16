@@ -1,86 +1,61 @@
 id: ImageCropper
-name: 'Image Cropper'
-plugin_author: 'Endevver, LLC.'
-plugin_link: 'http://endevver.com/plugins/image-cropper/'
-description: "Allows users to define a set of thumbnail prototypes that others can easily generate using a drag-and-drop image cropping tool."
-version: 1.0.18
-schema_version: 7
+name: Image Cropper
+description: <__trans phrase="Allows users to define a set of thumbnail prototypes that others can easily generate using a drag-and-drop image cropping tool.">
+version: 1.0.24
+schema_version: 8
 
 callbacks:
     MT::App::CMS::init_app: $ImageCropper::ImageCropper::Plugin::init_app
     MT::Asset::Image::post_remove: $ImageCropper::ImageCropper::Plugin::post_remove_asset
 
-upgrade_functions:
-    cropper_key_change:
-        version_limit: 6
-        priority: 1
-        updater:
-            type: thumbnail_prototype_map
-            label: Updating Prototype Map keys...
-            code: >
-                sub {
-                    my $pid = $_[0]->prototype_id;
-                    $_[0]->prototype_key('custom_' . $pid);
-                }
-
-options:
-  fieldsets:
-    defs:
-      label: Defaults
-  default_compress:
-    type: select
-    label: 'Default Compression'
-    tag: 'DefaultCropperCompression'
-    values: 1,2,3,4,5,6,7,8,9,10
-    scope: blog
-    default: '6'
-    fieldset: defs
-  annotate_fontfam:
-    scope: blog
-    default: 'Helvetica'
-    type: text
-    label: 'Annotation Font'
-    tag: 'CropperFontFamily'
-    fieldset: defs
-  annotate_fontsize:
-    scope: blog
-    default: '10'
-    type: text
-    label: 'Annotation Font Size'
-    tag: 'CropperFontSize'
-    fieldset: defs
-
-config_settings:
-  DefaultCroppedImageText: 
+settings:
+  cropped_text: 
     default: 'Created by "Image Cropper"'
-
+    scope: blog
+  default_compress:
+    default: '7'
+    scope: blog
+  annotate_fontfamily:
+    default: 'Helvetica'
+    scope: blog
+  annotate_fontsize:
+    default: '10'
+    scope: blog
 tags:
   block:
     CroppedAsset: $ImageCropper::ImageCropper::Plugin::hdlr_cropped_asset
-  function:
-    DefaultCroppedImageText: $ImageCropper::ImageCropper::Plugin::hdlr_default_text
-
 object_types:
     thumbnail_prototype: ImageCropper::Prototype
     thumbnail_prototype_map: ImageCropper::PrototypeMap
-
 applications:
   cms:
     menus: 
-      # for MT4.x
       prefs:image_cropper:
         label: Thumbnail Prototypes
         mode: list_prototypes
         order: 500
+        permission: edit_templates
         view: blog
-      # for MT5.x
       design:image_cropper:
         label: Thumbnail Prototypes
         mode: list_prototypes
         order: 500
-        view: 
+        permission: edit_templates
+        view:
           - blog
           - website
+        condition: $AssetHandler::AssetHandler::Util::is_mt5
+      design:crop_prototypes:
+        label: Crop Prototypes
+        mode: list
+        args:
+          _type: thumbnail_prototype
+        order: 500
+        permission: edit_templates
+        view:
+          - blog
+          - website
+        condition: $AssetHandler::AssetHandler::Util::is_illiad
     methods:
       list_prototypes: $ImageCropper::ImageCropper::Plugin::list_prototypes
       edit_prototype: $ImageCropper::ImageCropper::Plugin::edit_prototype
@@ -95,5 +70,76 @@ applications:
           label: 'Generate Thumbnails'
           order: 100
           mode: manage_thumbnails
-          permission: edit_assets, upload
+          permission: upload
           condition: $ImageCropper::ImageCropper::Util::asset_is_image
+    contents_actions:
+      thumbnail_prototype:
+        create_prototype:
+          class: mt-open-dialog icon-left icon-create icon-action
+          label: Create Crop Prototype
+          mode: edit_prototype
+          order: 200
+listing_screens:
+  thumbnail_prototype:
+    object_label: Crop Prototype
+    object_label_plural: Crop Prototypes
+    primary: label
+    screen_label: Prototypes
+    default_sort_key: label
+    view:
+      - blog
+      - website
+    scope_mode: this
+list_properties:
+  thumbnail_prototype:
+    id:
+      label: ID
+      auto: 1
+      order: 100
+      display: optional
+    label:
+      label: Label
+      auto: 1
+      order: 200
+      display: force
+      html_link: >
+        sub {
+          my $prop = shift;
+          my ( $obj, $app, $opts ) = @_;
+          return $app->uri(
+            mode => 'edit_prototype',
+            args => {
+              id => $obj->id,
+              blog_id => $opts->{blog_id} || 0,
+            },
+          );
+        }
+    max_width:
+      label: Max Width
+      auto: 1
+      display: default
+      order: 300
+    max_height:
+      label: Max Height
+      auto: 1
+      display: default
+      order: 400
+    created_by:
+      label: Created By
+      base: __virtual.author_name
+      display: optional
+      order: 500
+    created_on:
+      label: Created On
+      auto: 1
+      display: optional
+      order: 600
+list_actions:
+  thumbnail_prototype:
+    delete:
+      label: Delete
+      code: Common::delete
+      mode: delete
+      order: 100
+      js_message: delete
+      button: 1

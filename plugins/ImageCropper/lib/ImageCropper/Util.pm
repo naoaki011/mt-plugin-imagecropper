@@ -2,7 +2,7 @@ package ImageCropper::Util;
 
 use strict;
 use base 'Exporter';
-our @EXPORT_OK = qw( crop_filename crop_image annotate file_size find_prototype_id find_cropped_asset );
+our @EXPORT_OK = qw( crop_filename crop_image annotate file_size find_prototype_id find_cropped_asset is_user_can );
 
 sub file_size {
     my $a     = shift;
@@ -36,7 +36,6 @@ sub crop_image {
         'y'      => $y,
     );
     if ($qual) {
-        #MT->log( { message => "Quality of image: $qual" } );
         $magick->Set( quality => $qual );
     }
     return $image->error(
@@ -125,7 +124,13 @@ sub crop_filename {
 sub find_prototype_id {
     my ( $ts, $label ) = @_;
     return undef unless $ts;
-    my $protos = MT->registry('template_sets')->{$ts}->{thumbnail_prototypes};
+    my $protos;
+    if ( MT->version_id  < 5 ) {
+        $protos = MT->registry('template_sets')->{$ts}->{thumbnail_prototypes};
+    }
+    else {
+        $protos = MT->registry('themes')->{$ts}->{thumbnail_prototypes};
+    }
     foreach ( keys %$protos ) {
         my $l = $protos->{$_}->{label};
         return $_ if ( $l && $l ne '' && &{$l} eq $label );
@@ -135,6 +140,7 @@ sub find_prototype_id {
 sub find_cropped_asset {
     my ( $blog_id, $asset, $label ) = @_;
     $blog_id    = 0 unless ( $blog_id && $blog_id ne '' );
+    return undef unless $blog_id;
     my $blog    = MT->model('blog')->load($blog_id);
     my $ts      = $blog->template_set;
 
@@ -145,7 +151,6 @@ sub find_cropped_asset {
         }
     );
     if ($prototype) {
-        # MT->log({ message => "prototype found: " . $prototype->id });
         $map = MT->model('thumbnail_prototype_map')->load( {
                 prototype_key => 'custom_' . $prototype->id,
                 asset_id      => $asset->id,
@@ -154,7 +159,6 @@ sub find_cropped_asset {
     }
     elsif ( my $id = find_prototype_id( $ts, $label ) ) {
 
-        # MT->log({ message => "prototype not found, consulted registry: " . $id });
         $map = MT->model('thumbnail_prototype_map')->load( {
                 prototype_key => $ts . "___" . $id,
                 asset_id      => $asset->id,
@@ -175,6 +179,42 @@ sub asset_is_image {
     if (($class eq 'image')&&($parent eq '')) {
         return 1;
     } else {
+        return 0;
+    }
+}
+
+sub is_user_can {
+    my ( $blog, $user, $permission ) = @_;
+    $permission = 'can_' . $permission;
+    my $perm = $user->is_superuser;
+    unless ( $perm ) {
+        if ( $blog ) {
+            my $admin = 'can_administer_blog';
+            $perm = $user->permissions( $blog->id )->$admin;
+            $perm = $user->permissions( $blog->id )->$permission unless $perm;
+        } else {
+            $perm = $user->permissions()->$permission;
+        }
+    }
+    return $perm;
+}
+
+sub is_mt5 {
+    my $version = MT->version_id;
+    if (($version < 5.1)&&($version >= 5)) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
+}
+
+sub is_illiad {
+    my $version = MT->version_id;
+    if ($version >= 5.1) {
+        return 1;
+    }
+    else {
         return 0;
     }
 }

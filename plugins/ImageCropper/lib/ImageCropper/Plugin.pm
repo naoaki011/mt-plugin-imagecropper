@@ -9,10 +9,9 @@ use warnings;
 use Carp qw( croak longmess confess );
 use MT::Util qw(    relative_date   ts2epoch format_ts     caturl
                  offset_time_list   epoch2ts offset_time          );
-use ImageCropper::Util qw( crop_filename crop_image annotate file_size find_cropped_asset );
+use ImageCropper::Util qw(  crop_filename  crop_image annotate    is_user_can
+                            file_size      find_cropped_asset     find_prototype_id );
 use Sub::Install;
-
-# use MT::Log::Log4perl qw( l4mtdump ); use Log::Log4perl qw( :resurrect ); my $logger ||= MT::Log::Log4perl->new();
 
 my %target;
 
@@ -39,7 +38,8 @@ sub post_remove_asset {
 sub init_app {
     my ( $plugin, $app ) = @_;
 
-    ###l4p $logger ||= MT::Log::Log4perl->new(); $logger->trace();
+    # Do nothing unless the current app is our target app
+    return unless ref $app and $app->isa('MT::App::CMS');
 
     # This plugin operates by overriding the method
     # (MT::CMS::Asset::complete_upload)
@@ -48,9 +48,6 @@ sub init_app {
         method => 'complete_upload',
         subref => undef
     );
-
-    # Do nothing unless the current app is our target app
-    return unless ref $app and $app->isa('MT::App::CMS');
 
     # Make sure that our app module has the method we're looking for
     # and grab a reference to it if so.
@@ -75,9 +72,6 @@ sub init_app {
         return undef;    # We simply can't go on....
     }
 
-    ###l4p $logger->debug( 'Overriding method: '
-    ###l4p               . join('::', $target{module}, $target{method}));
-
     # Override the target method with our own version
     require Sub::Install;
     Sub::Install::reinstall_sub( {
@@ -92,8 +86,6 @@ sub complete_upload_wrapper {
     my $app      = shift;
     my $q        = $app->can('query') ? $app->query : $app->param;
     my $asset_id = $q->param('id');
-
-    ###l4p $logger     ||= MT::Log->get_logger();  $logger->trace();
 
     # Call the original method to perform the work
     $target{subref}->( $app, @_ );
@@ -118,15 +110,18 @@ sub complete_upload_wrapper {
     return;
 }
 
-sub hdlr_default_text {
-    my ( $ctx, $args, $cond ) = @_;
-    my $cfg = $ctx->{config};
-    return $cfg->DefaultCroppedImageText;
-}
-
 sub del_prototype {
     my ($app) = @_;
-    $app->validate_magic or return;
+    my $blog = $app->blog;
+    if (! $blog ) {
+        return MT->translate( 'Invalid request.' );
+    }
+    $app->validate_magic()
+      or return MT->translate( 'Permission denied.' );
+    my $user = $app->user;
+    if (! is_user_can( $blog, $user, 'edit_templates' ) ) {
+        return MT->translate( 'Permission denied.' );
+    }
     my $q = $app->can('query') ? $app->query : $app->param;
     my @protos = $q->param('id');
     for my $pid (@protos) {
@@ -135,18 +130,6 @@ sub del_prototype {
     }
     $app->add_return_arg( prototype_removed => 1 );
     $app->call_return;
-}
-
-sub find_prototype_id {
-    my ( $ctx, $label ) = @_;
-    my $blog = $ctx->stash('blog');
-    my $ts   = $blog->template_set;
-    return undef unless $ts;
-    my $protos = MT->registry('template_sets')->{$ts}->{thumbnail_prototypes};
-    foreach ( keys %$protos ) {
-        my $l = $protos->{$_}->{label};
-        return $_ if ( $l && $l ne '' && &{$l} eq $label );
-    }
 }
 
 sub hdlr_cropped_asset {
@@ -185,6 +168,16 @@ sub _hdlr_pass_tokens_else {
 
 sub save_prototype {
     my $app = shift;
+    my $blog = $app->blog;
+    if (! $blog ) {
+        return MT->translate( 'Invalid request.' );
+    }
+    $app->validate_magic()
+      or return MT->translate( 'Permission denied.' );
+    my $user = $app->user;
+    if (! is_user_can( $blog, $user, 'edit_templates' ) ) {
+        return MT->translate( 'Permission denied.' );
+    }
     my $param;
     my $q = $app->can('query') ? $app->query : $app->param;
     my $obj = MT->model('thumbnail_prototype')->load( $q->param('id') )
@@ -203,9 +196,19 @@ sub save_prototype {
 
 sub edit_prototype {
     my $app     = shift;
+    my $blog = $app->blog;
+    if (! $blog ) {
+        return MT->translate( 'Invalid request.' );
+    }
+    $app->validate_magic()
+      or return MT->translate( 'Permission denied.' );
+    my $user = $app->user;
+    if (! is_user_can( $blog, $user, 'edit_templates' ) ) {
+        return MT->translate( 'Permission denied.' );
+    }
+
     my ($param) = @_;
     my $q       = $app->can('query') ? $app->query : $app->param;
-    my $blog    = MT::Blog->load( $q->param('blog_id') );
 
     $param ||= {};
 
@@ -230,31 +233,58 @@ sub load_ts_prototype {
     my $app = shift;
     my ($key) = @_;
     my ( $ts, $id ) = split( '___', $key );
-    return $app->registry('template_sets')->{$ts}->{thumbnail_prototypes}
-      ->{$id};
+    if ( MT->version_id  < 5 ) {
+        return $app->registry('template_sets')->{$ts}->{thumbnail_prototypes}
+          ->{$id};
+    }
+    else {
+        return $app->registry('themes')->{$ts}->{thumbnail_prototypes}
+          ->{$id};
+    }
 }
 
 sub load_ts_prototypes {
     my $app  = shift;
     my $blog = $app->blog;
-
     my @protos;
-    if ( $blog->template_set ) {
-        my $ts = $blog->template_set;
-        my $ps =
-          $app->registry('template_sets')->{$ts}->{thumbnail_prototypes};
-        foreach ( keys %$ps ) {
-            my $p = $ps->{$_};
-            push @protos,
-              { id           => $_,
-                type         => 'template_set',
-                key          => "$ts::$_",
-                template_set => $ts,
-                blog_id      => $blog->id,
-                label        => &{ $p->{label} },
-                max_width    => $p->{max_width},
-                max_height   => $p->{max_height},
-              };
+    if ( MT->version_id  < 5 ) {
+        if ( $blog->template_set ) {
+            my $ts = $blog->template_set;
+            my $ps =
+              $app->registry('template_sets')->{$ts}->{thumbnail_prototypes};
+            foreach ( keys %$ps ) {
+                my $p = $ps->{$_};
+                push @protos,
+                  { id           => $_,
+                    type         => 'template_set',
+                    key          => "$ts::$_",
+                    template_set => $ts,
+                    blog_id      => $blog->id,
+                    label        => &{ $p->{label} },
+                    max_width    => $p->{max_width},
+                    max_height   => $p->{max_height},
+                  };
+            }
+        }
+    }
+    else {
+        if ( $blog->theme_id ) {
+            my $tm = $blog->theme_id;
+            my $ps =
+              $app->registry('themes')->{$tm}->{thumbnail_prototypes};
+            foreach ( keys %$ps ) {
+                my $p = $ps->{$_};
+                push @protos,
+                  { id           => $_,
+                    type         => 'template_set',
+                    key          => "$tm::$_",
+                    template_set => $tm,
+                    blog_id      => $blog->id,
+                    label        => &{ $p->{label} },
+                    max_width    => $p->{max_width},
+                    max_height   => $p->{max_height},
+                  };
+            }
         }
     }
     return \@protos;
@@ -262,15 +292,33 @@ sub load_ts_prototypes {
 
 sub list_prototypes {
     my $app = shift;
+    my $blog = $app->blog;
+    if (! $blog ) {
+        return MT->translate( 'Invalid request.' );
+    }
+    $app->validate_magic()
+      or return MT->translate( 'Permission denied.' );
+    my $user = $app->user;
+    if (! is_user_can( $blog, $user, 'edit_templates' ) ) {
+        return MT->translate( 'Permission denied.' );
+    }
     my ($params) = @_ || {};
     my $q = $app->can('query') ? $app->query : $app->param;
-    my $blog     = $app->blog;
-
-    if ( $blog && $app->blog->template_set ) {
-        my $loop = load_ts_prototypes($app);
-        $params->{prototype_loop} = $loop;
-        $params->{template_set_name} =
-          $app->registry('template_sets')->{ $blog->template_set }->{label};
+    if ( MT->version_id  < 5 ) {
+        if ( $blog && $app->blog->template_set ) {
+            my $loop = load_ts_prototypes($app);
+            $params->{prototype_loop} = $loop;
+            $params->{template_set_name} =
+              $app->registry('template_sets')->{ $blog->template_set }->{label};
+        }
+    }
+    else {
+        if ( $blog && $app->blog->theme_id ) {
+            my $loop = load_ts_prototypes($app);
+            $params->{prototype_loop} = $loop;
+            $params->{template_set_name} =
+              $app->registry('themes')->{ $blog->theme_id }->{label};
+        }
     }
     $params->{prototype_saved} = $q->param('prototype_saved');
     $params->{screen_id}       = 'list-prototypes';
@@ -320,7 +368,16 @@ sub list_prototypes {
 sub gen_thumbnails_start {
     my $app = shift;
     my ($param) = @_ || {};
-    $app->validate_magic or return;
+    my $blog = $app->blog;
+    if (! $blog ) {
+        return MT->translate( 'Invalid request.' );
+    }
+    $app->validate_magic()
+      or return MT->translate( 'Permission denied.' );
+    my $user = $app->user;
+    if (! is_user_can( $blog, $user, 'upload' ) ) {
+        return MT->translate( 'Permission denied.' );
+    }
 
     my $id  = $app->{query}->param('id');
     my $obj = MT->model('asset')->load($id)
@@ -395,6 +452,15 @@ sub gen_thumbnails_start {
     $param->{asset_label}    = defined $obj->label ? $obj->label
                                                    : $obj->file_name;
 
+    my $plugin = MT->component("ImageCropper");
+    my $scope  = "blog:" . $blog->id;
+    $param->{annotation}     = $plugin->get_config_value( 'cropped_text', $scope ) ? $plugin->get_config_value( 'cropped_text', $scope )
+                                                                                   : 'Created by "Image Cropper"';
+    $param->{annotation_size}= $plugin->get_config_value( 'annotate_fontsize', $scope ) ? $plugin->get_config_value( 'annotate_fontsize', $scope )
+                                                                                        : '10';
+    $param->{default_qualty} = $plugin->get_config_value( 'default_compress', $scope ) ? $plugin->get_config_value( 'default_compress', $scope )
+                                                                                       : '7';
+
     my $tmpl = $app->load_tmpl( 'start.tmpl', $param );
     my $ctx = $tmpl->context;
     $ctx->stash( 'asset', $obj );
@@ -403,8 +469,17 @@ sub gen_thumbnails_start {
 
 sub delete_crop {
     my $app  = shift;
-    my $q    = $app->can('query') ? $app->query : $app->param;
     my $blog = $app->blog;
+    if (! $blog ) {
+        return MT->translate( 'Invalid request.' );
+    }
+    $app->validate_magic()
+      or return MT->translate( 'Permission denied.' );
+    my $user = $app->user;
+    if (! is_user_can( $blog, $user, 'edit_assets' ) ) {
+        return MT->translate( 'Permission denied.' );
+    }
+    my $q    = $app->can('query') ? $app->query : $app->param;
     my $id   = $q->param('id');
     my $key  = $q->param('prototype');
 
@@ -438,8 +513,17 @@ sub delete_crop {
 
 sub crop {
     my $app  = shift;
-    my $q = $app->can('query') ? $app->query : $app->param;
     my $blog = $app->blog;
+    if (! $blog ) {
+        return MT->translate( 'Invalid request.' );
+    }
+    $app->validate_magic()
+      or return MT->translate( 'Permission denied.' );
+    my $user = $app->user;
+    if (! is_user_can( $blog, $user, 'edit_assets' ) ) {
+        return MT->translate( 'Permission denied.' );
+    }
+    my $q = $app->can('query') ? $app->query : $app->param;
 
     my $X         = $q->param('x');
     my $Y         = $q->param('y');
@@ -483,11 +567,9 @@ sub crop {
     my $cropped_path =
       File::Spec->catfile( $cache_path, @cropped_file_parts );
     $cropped_path =~ s{\\}{/}g;
-#    MT->log({ blog_id => $blog->id, message => "Cropped filename: $cropped_path" });
 
     my $cropped_url = caturl( $cache_url, @cropped_file_parts );
     $cropped_url =~ s{\\}{/}g;
-#    MT->log({ blog_id => $blog->id, message => "Cropped URL: $cropped_url" });
 
     my ( $base, $path, $ext ) =
       File::Basename::fileparse( File::Spec->catfile(@cropped_file_parts),
@@ -521,7 +603,6 @@ sub crop {
         my $oldasset = MT->model('asset')->load( $oldmap->cropped_asset_id );
         if ($oldasset) {
 
-# MT->log({ blog_id => $blog->id, message => "Removing: " . $oldasset->label });
             $oldasset->remove()
               or MT->log( {
                     blog_id => $blog->id,
@@ -572,7 +653,7 @@ sub crop {
     if ( $annotate && $text ) {
         my $plugin = MT->component("ImageCropper");
         my $scope  = "blog:" . $blog->id;
-        my $fam    = $plugin->get_config_value( 'annotate_fontfam', $scope );
+        my $fam    = $plugin->get_config_value( 'annotate_fontfamily', $scope );
         $data = annotate(
             $img,
             text     => $text,
@@ -607,7 +688,6 @@ sub crop {
     my $error = '';
     if ( !-d $cache_path ) {
 
-# MT->log({ blog_id => $blog->id, message => "$cache_path is NOT a directory. Creating..." });
         require MT::FileMgr;
         unless ( $fmgr->mkpath($cache_path) ) {
             MT->log( {
@@ -667,6 +747,15 @@ sub _box_dim {
         $box_h = $obj->image_height;
     }
     return ( $box_w, $box_h );
+}
+
+sub doLog {
+    my ($msg) = @_; 
+    return unless defined($msg);
+    require MT::Log;
+    my $log = MT::Log->new;
+    $log->message($msg) ;
+    $log->save or die $log->errstr;
 }
 
 1;

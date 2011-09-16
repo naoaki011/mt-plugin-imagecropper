@@ -43,42 +43,19 @@
       <input id="max_height" type="text" name="max_height" value="<mt:var name="max_height" />" /><br />
 </mtapp:setting>
 
-<mt:ignore>
-<mtapp:setting
-    id="pattern_type"
-    label_class="top-label"
-    label="<__trans phrase="Pattern">"
-    show_label="0"
-    show_hint="1">
-      <input type="checkbox" id="opts_regex" name="regex" value="1" <mt:if name="regex">checked </mt:if>/> <label for="opts_regex"><__trans phrase="Regular Expression"></label>
-      &nbsp;&nbsp;
-      <input type="checkbox" id="opts_global" name="global" value="1" <mt:if name="global">checked </mt:if>/> <label for="opts_global"><__trans phrase="Link all occurences"></label>
-      &nbsp;&nbsp;
-      <input type="checkbox" id="opts_case" name="case" value="1" <mt:if name="case">checked </mt:if>/> <label for="opts_case"><__trans phrase="Case Insensitive?"></label>
-</mtapp:setting>
-
-<mtapp:setting
-    id="url"
-    label_class="top-label"
-    label="<__trans phrase="Destination URL">"
-    show_hint="0">
-      <input id="url" type="text" name="url" value="<mt:var name="destination" />" class="full-width" />
-</mtapp:setting>
-</mt:ignore>
-
 <div class="actions-bar">
     <div class="actions-bar-inner pkg actions">
         <button
             type="submit"
             accesskey="s"
             title="<__trans phrase="Continue">"
-            class="primary-button action"
+            class="primary-button primary button action"
             ><__trans phrase="Continue"></button>
         <button
             type="submit"
             accesskey="x"
             title="<__trans phrase="Cancel (x)">"
-            class="cancel action mt-close-dialog"
+            class="cancel button action mt-close-dialog"
             ><__trans phrase="Cancel"></button>
     </div>
 </div>

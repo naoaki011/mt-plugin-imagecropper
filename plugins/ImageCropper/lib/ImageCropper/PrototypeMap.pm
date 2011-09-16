@@ -31,5 +31,13 @@ __PACKAGE__->install_properties( {
     }
 );
 
+sub class_label {
+    MT->translate("Thumbnail Prototype Map");
+}
+
+sub class_label_plural {
+    MT->translate("Thumbnail Prototype Maps");
+}
+
 1;
 __END__

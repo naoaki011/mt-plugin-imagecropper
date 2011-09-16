@@ -151,9 +151,9 @@
     <div class="actions-bar">
       <div class="actions-bar-inner pkg actions">
         <button
-         style="float: right"
+            style="float: right"
             type="button"
-            class="primary-button action"
+            class="primary-button button action"
             accesskey="s"
             title="<__trans phrase="Return to the asset editing screen">"
             onclick="location.href = '?__mode=view&_type=asset&id=<$mt:AssetID$>&blog_id=<$mt:BlogID$>';"><__trans phrase="Return to asset"></button>
@@ -161,7 +161,7 @@
         <button
             style="float: right"
             type="button"
-            class="action"
+            class="button action"
             title="<__trans phrase="Edit Prototypes">"
             onclick="location.href = '?__mode=list_prototypes&blog_id=<$mt:var name="blog_id"$>';"><__trans phrase="Edit Prototypes"></button>
 </mt:if>
@@ -221,14 +221,14 @@
     label_class="top-label"
     label="<__trans phrase="Text Annotation">"
     show_hint="0">
-      <input type="text" name="annotation" value="<$mt:DefaultCroppedImageText encode_html="1"$>" size="30" />
+      <input type="text" name="annotation" value="<$mt:var name="annotation" escape="html"$>" size="60" />
 </mtapp:setting>
 <mtapp:setting
     id="annotation_size"
     label_class="top-label"
     label="<__trans phrase="Font Size">"
     show_hint="0">
-       <input type="text" name="annotation_size" value="<$mt:CropperFontSize$>" size="5" />
+       <input type="text" name="annotation_size" value="<$mt:var name="annotation_size" escape="html"$>" size="5" />
 </mtapp:setting>
 <mtapp:setting
     id="annotation_loc"
@@ -252,6 +252,7 @@
          <option><__trans phrase="Vertical"></option>
        </select>
 </mtapp:setting>
+<br style="clear:both;" />
 </div>
 
 <div id="compress-settings" class="pkg settings-group">
@@ -271,29 +272,28 @@
     id="quality"
     label="<__trans phrase="Thumbnail Quality">"
     show_hint="1">
-       <mt:setvarblock name="def"><$mt:DefaultCropperCompression$></mt:setvarblock>
-       <mt:if name="def" eq=""><$mt:var name="def" value="5"$></mt:if>
        <select name="quality">
-         <option value="1"<mt:if name="def" eq="0"> selected</mt:if>>0 - Lowest</option>
-         <option value="10"<mt:if name="def" eq="1"> selected</mt:if>>1</option>
-         <option value="20"<mt:if name="def" eq="2"> selected</mt:if>>2</option>
-         <option value="30"<mt:if name="def" eq="3"> selected</mt:if>>3</option>
-         <option value="40"<mt:if name="def" eq="4"> selected</mt:if>>4</option>
-         <option value="50"<mt:if name="def" eq="5"> selected</mt:if>>5</option>
-         <option value="60"<mt:if name="def" eq="6"> selected</mt:if>>6</option>
-         <option value="70"<mt:if name="def" eq="7"> selected</mt:if>>7</option>
-         <option value="80"<mt:if name="def" eq="8"> selected</mt:if>>8</option>
-         <option value="90"<mt:if name="def" eq="9"> selected</mt:if>>9</option>
-         <option value="100"<mt:if name="def" eq="10"> selected</mt:if>>10 - Highest</option>
+         <option value="1"<mt:if name="default_qualty" eq="0"> selected</mt:if>>0 - Lowest</option>
+         <option value="10"<mt:if name="default_qualty" eq="1"> selected</mt:if>>1</option>
+         <option value="20"<mt:if name="default_qualty" eq="2"> selected</mt:if>>2</option>
+         <option value="30"<mt:if name="default_qualty" eq="3"> selected</mt:if>>3</option>
+         <option value="40"<mt:if name="default_qualty" eq="4"> selected</mt:if>>4</option>
+         <option value="50"<mt:if name="default_qualty" eq="5"> selected</mt:if>>5</option>
+         <option value="60"<mt:if name="default_qualty" eq="6"> selected</mt:if>>6</option>
+         <option value="70"<mt:unless name="default_qualty" like="/^(0|1|2|3|4|5|6|8|9|10)$/"> selected</mt:unless>>7</option>
+         <option value="80"<mt:if name="default_qualty" eq="8"> selected</mt:if>>8</option>
+         <option value="90"<mt:if name="default_qualty" eq="9"> selected</mt:if>>9</option>
+         <option value="100"<mt:if name="default_qualty" eq="10"> selected</mt:if>>10 - Highest</option>
        </select>
 </mtapp:setting>
 </div>
+<br style="clear:both;" />
 
 <div class="actions-bar">
   <div class="actions-bar-inner pkg actions">
     <button
         type="button"
-        class="primary-button action"
+        class="primary-button primary button action"
         accesskey="s"
         title="Crop"
         onclick="return cropAsset();"><__trans phrase="Crop"></button>
