@@ -134,6 +134,18 @@ simple example:
         index:
           etc...
 
+example of define prototypes via MT5 theme via `config.yaml`.
+
+themes:
+  mtVicunaSimple:
+    id: mtVicunaSimple
+    label: mt.Vicuna Simple Theme
+    thumbnail_prototypes:
+      feature_thumb:
+        label: Featured Thumbnail
+        max_width: 300
+        max_height: 90
+
 As you can see you can define one or more prototypes easily for a theme.
 Designers can specify the label for the prototype as well as its 
 dimensions.
