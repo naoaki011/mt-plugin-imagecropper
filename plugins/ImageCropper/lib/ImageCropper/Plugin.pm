@@ -200,8 +200,6 @@ sub edit_prototype {
     if (! $blog ) {
         return MT->translate( 'Invalid request.' );
     }
-    $app->validate_magic()
-      or return MT->translate( 'Permission denied.' );
     my $user = $app->user;
     if (! is_user_can( $blog, $user, 'edit_templates' ) ) {
         return MT->translate( 'Permission denied.' );

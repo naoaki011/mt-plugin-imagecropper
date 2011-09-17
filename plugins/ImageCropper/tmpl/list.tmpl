@@ -62,8 +62,7 @@
 
 <mt:setvarblock name="listing_header">
 <h3><__trans phrase="Custom Thumbnail Prototypes"></h3>
-<mt:ignore><p id="create-new-link"><a href="javascript:void(0)" onclick="openDialog(null,'edit_prototype','blog_id=<mt:var name="blog_id">');return false;" class="icon-left icon-create"><__trans phrase="Create Thumbnail Prototype"></a></p></mt:ignore>
-    <p id="create-new-link"><a href="<mt:var ="script_url">?__mode=edit_prototype&blog_id=<mt:var name="blog_id">" class="mt-open-dialog icon-left icon-create"><__trans phrase="Create Thumbnail Prototype"></a></p>
+    <p id="create-new-link"><a href="<mt:var ="script_url">?__mode=edit_prototype&blog_id=<mt:var name="blog_id">&magic_token=<mt:var name="magic_token">" class="mt-open-dialog icon-left icon-create"><__trans phrase="Create Thumbnail Prototype"></a></p>
 </mt:setvarblock>
 
 <mtapp:listing type="prototypes" default="<__trans phrase="No custom thumbnail prototypes could be found.">" empty_message="<__trans phrase="No custom thumbnail prototypes could be found.">" hide_pager="1" class="show_all">
@@ -81,8 +80,7 @@
     </mt:if>
         <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
             <td class="cb"><input type="checkbox" name="id" value="<mt:var name="id">" class="select" /></td>
-<mt:ignore><td><a href="javascript:void(0)" onclick="openDialog(null,'edit_prototype','blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="id">');return false;" class=""><mt:var name="label" escape="html"></a></td></mt:ignore>
-            <td><a href="<mt:var ="script_url">?__mode=edit_prototype&blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="id">" class="mt-open-dialog"><mt:var name="label" escape="html"></a></td>
+            <td><a href="<mt:var ="script_url">?__mode=edit_prototype&blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="id">&amp;magic_token=<mt:var name="magic_token">" class="mt-open-dialog"><mt:var name="label" escape="html"></a></td>
             <td><mt:var name="max_width" escape="html"></td>
             <td><mt:var name="max_height" escape="html"></td>
             <td>
