@@ -84,7 +84,7 @@ just that:
 
     <mt:Asset id="136">
       <mt:CroppedAsset label="Square">
-        <img src="<$mt:AssetURL$>" width="100" height="100" />
+        <img src="<$mt:AssetURL$>" width="<$mt:AssetProperty property="image_width"$>" height="<$mt:AssetProperty property="image_height"$>" />
       <mt:Else>
         <img src="<$mt:AssetThumbnailURL square="1" width="100"$>" />
       </mt:CroppedAsset>
@@ -96,9 +96,6 @@ just that:
   used when annotating images.
 
 ## Template Tags ##
-
-* `<$mt:DefaultCroppedImageText$>` - Returns the default cropped image
-   text as specified by the DefaultCroppedImageText config parameter.
 
 * `<$mt:CroppedAsset$>` - Places the desired cropped image asset
   into context. This tag must be called with an existing asset
@@ -149,6 +146,12 @@ example of define prototypes via MT5 theme via `config.yaml`.
 As you can see you can define one or more prototypes easily for a theme.
 Designers can specify the label for the prototype as well as its 
 dimensions.
+
+# This modified version of ImageCropper
+
+This modified version of Image Cropper for MT5 or later maintain by naoaki.onozaki.
+
+Original version of Image Cropper created by Endevver, LLC.
 
 ## Help, Bugs and Feature Requests ##
 
