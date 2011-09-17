@@ -147,13 +147,13 @@ As you can see you can define one or more prototypes easily for a theme.
 Designers can specify the label for the prototype as well as its 
 dimensions.
 
-# This modified version of ImageCropper
+## This modified version of ImageCropper
 
 This modified version of Image Cropper for MT5 or later maintain by naoaki.onozaki.
 
 Original version of Image Cropper created by Endevver, LLC.
 
-## Help, Bugs and Feature Requests ##
+# Help, Bugs and Feature Requests ##
 
 If you are having problems installing or using the plugin, please check out our general knowledge base and help ticket system at [help.endevver.com](http://help.endevver.com).
 
