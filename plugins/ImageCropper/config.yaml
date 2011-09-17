@@ -3,6 +3,10 @@ name: Image Cropper
 description: <__trans phrase="Allows users to define a set of thumbnail prototypes that others can easily generate using a drag-and-drop image cropping tool.">
 version: 1.0.24
 schema_version: 8
+l10n_class: ImageCropper::L10N
+author_name: naoaki.onozaki
+author_link: http://www.zelazny.mydns.jp/
+plugin_link: https://github.com/naoaki011/mt-plugin-imagecropper
 
 callbacks:
     MT::App::CMS::init_app: $ImageCropper::ImageCropper::Plugin::init_app
@@ -21,9 +25,15 @@ upgrade_functions:
         priority: 5
         code: $ImageCropper::ImageCropper::Upgrade::AbbrevTables::run
 
+config_settings:
+  DefaultCroppedImageText: 
+    default: 'Created by "Image Cropper"'
+
+blog_config_template: tmpl/blog_config.tmpl
+
 settings:
   cropped_text: 
-    default: 'Created by "Image Cropper"'
+    default: ''
     scope: blog
   default_compress:
     default: '7'

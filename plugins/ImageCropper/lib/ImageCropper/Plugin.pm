@@ -296,8 +296,6 @@ sub list_prototypes {
     if (! $blog ) {
         return MT->translate( 'Invalid request.' );
     }
-    $app->validate_magic()
-      or return MT->translate( 'Permission denied.' );
     my $user = $app->user;
     if (! is_user_can( $blog, $user, 'edit_templates' ) ) {
         return MT->translate( 'Permission denied.' );
@@ -452,13 +450,19 @@ sub gen_thumbnails_start {
     $param->{asset_label}    = defined $obj->label ? $obj->label
                                                    : $obj->file_name;
 
+    use MT;
+    my $mt = new MT;
+    my $default_text = $mt->config->DefaultCroppedImageText;
     my $plugin = MT->component("ImageCropper");
     my $scope  = "blog:" . $blog->id;
-    $param->{annotation}     = $plugin->get_config_value( 'cropped_text', $scope ) ? $plugin->get_config_value( 'cropped_text', $scope )
-                                                                                   : 'Created by "Image Cropper"';
-    $param->{annotation_size}= $plugin->get_config_value( 'annotate_fontsize', $scope ) ? $plugin->get_config_value( 'annotate_fontsize', $scope )
+    my $cropped_text = $plugin->get_config_value( 'cropped_text', $scope );
+    my $annotation_size = $plugin->get_config_value( 'annotate_fontsize', $scope );
+    my $default_qualty = $plugin->get_config_value( 'default_compress', $scope );
+    $param->{annotation}      = $cropped_text    ? $cropped_text
+                                                 : $default_text;
+    $param->{annotation_size} = $annotation_size ? $annotation_size
                                                                                         : '10';
-    $param->{default_qualty} = $plugin->get_config_value( 'default_compress', $scope ) ? $plugin->get_config_value( 'default_compress', $scope )
+    $param->{default_qualty}  = $default_qualty  ? $default_qualty
                                                                                        : '7';
 
     my $tmpl = $app->load_tmpl( 'start.tmpl', $param );

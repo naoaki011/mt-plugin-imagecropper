@@ -131,7 +131,7 @@ simple example:
         index:
           etc...
 
-example of define prototypes via MT5 theme via `config.yaml`.
+example of define prototypes for MT5 theme via `config.yaml`.
 
     themes:
       mtVicunaSimple:
