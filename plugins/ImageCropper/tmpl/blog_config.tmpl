@@ -1,0 +1,43 @@
+<mtapp:setting
+  id='cropped_text'
+  label='<__trans phrase='Cropped Text'>'
+  hint='<__trans phrase='Hint'>'
+  >
+    <input type="text" name="cropped_text" name="cropped_text" value="<mt:var name="cropped_text" escape="html">" /><br/>
+</mtapp:setting>
+
+<mtapp:setting
+  id='default_compress'
+  label='<__trans phrase='Default Compress'>'
+  hint='<__trans phrase='Hint'>'
+  >
+    <select name="default_compress">
+        <option value="0"<mt:if name="default_compress" eq="0"> selected</mt:if>>0 - Lowest</option>
+        <option value="1"<mt:if name="default_compress" eq="1"> selected</mt:if>>1</option>
+        <option value="2"<mt:if name="default_compress" eq="2"> selected</mt:if>>2</option>
+        <option value="3"<mt:if name="default_compress" eq="3"> selected</mt:if>>3</option>
+        <option value="4"<mt:if name="default_compress" eq="4"> selected</mt:if>>4</option>
+        <option value="5"<mt:if name="default_compress" eq="5"> selected</mt:if>>5</option>
+        <option value="6"<mt:if name="default_compress" eq="6"> selected</mt:if>>6</option>
+        <option value="7"<mt:unless name="default_compress" like="/^(0|1|2|3|4|5|6|8|9|10)$/"> selected</mt:unless>>7</option>
+        <option value="8"<mt:if name="default_compress" eq="8"> selected</mt:if>>8</option>
+        <option value="9"<mt:if name="default_compress" eq="9"> selected</mt:if>>9</option>
+        <option value="10"<mt:if name="default_compress" eq="10"> selected</mt:if>>10 - Highest</option>
+    </select>
+</mtapp:setting>
+
+<mtapp:setting
+  id='annotate_fontfamily'
+  label='<__trans phrase='Annotation FontFamily'>'
+  hint='<__trans phrase='Hint'>'
+  >
+    <input type="text" name="annotate_fontfamily" name="annotate_fontfamily" value="<mt:var name="annotate_fontfamily" escape="html">" /><br/>
+</mtapp:setting>
+
+<mtapp:setting
+  id='annotate_fontsize'
+  label='<__trans phrase='Annotation FontSize'>'
+  hint='<__trans phrase='Hint'>'
+  >
+    <input type="text" name="annotate_fontsize" name="annotate_fontsize" value="<mt:var name="annotate_fontsize" escape="html">" /><br/>
+</mtapp:setting>
