@@ -26,7 +26,7 @@ __PACKAGE__->install_properties( {
             prototype_key => 1,
             asset_id      => 1,
         },
-        datasource  => 'cropper_prototypemaps',
+        datasource  => 'crop_map',
         primary_key => 'id',
     }
 );

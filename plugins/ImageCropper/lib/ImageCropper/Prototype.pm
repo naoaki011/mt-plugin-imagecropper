@@ -21,7 +21,7 @@ __PACKAGE__->install_properties( {
             blog_id => 1,
             labels  => { columns => [ 'blog_id', 'label' ], },
         },
-        datasource  => 'cropper_prototypes',
+        datasource  => 'crop',
         primary_key => 'id',
     }
 );

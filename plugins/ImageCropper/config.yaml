@@ -8,6 +8,19 @@ callbacks:
     MT::App::CMS::init_app: $ImageCropper::ImageCropper::Plugin::init_app
     MT::Asset::Image::post_remove: $ImageCropper::ImageCropper::Plugin::post_remove_asset
 
+upgrade_functions:
+    cropper_key_change:
+        version_limit: 6
+        priority: 1
+        updater:
+            type: thumbnail_prototype_map
+            label: Updating Prototype Map keys...
+            code: $ImageCropper::ImageCropper::Upgrade::prototype_map_key
+    cropper_abbrev_tables:
+        version_limit: 8
+        priority: 5
+        code: $ImageCropper::ImageCropper::Upgrade::AbbrevTables::run
+
 settings:
   cropped_text: 
     default: 'Created by "Image Cropper"'
