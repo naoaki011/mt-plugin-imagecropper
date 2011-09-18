@@ -47,6 +47,11 @@ settings:
 tags:
   block:
     CroppedAsset: $ImageCropper::ImageCropper::Plugin::hdlr_cropped_asset
+  function:
+    ScaleThumbnailURL: $ImageCropper::ImageCropper::Plugin::hdlr_scale_thumbnail
+    FillThumbnailURL: $ImageCropper::ImageCropper::Plugin::hdlr_fill_thumbnail
+    CropThumbnailURL: $ImageCropper::ImageCropper::Plugin::hdlr_crop_thumbnail
+    PrototypeVar: $ImageCropper::ImageCropper::Plugin::hdlr_var_prototype
 object_types:
     thumbnail_prototype: ImageCropper::Prototype
     thumbnail_prototype_map: ImageCropper::PrototypeMap

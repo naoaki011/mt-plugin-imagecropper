@@ -86,7 +86,9 @@ just that:
       <mt:CroppedAsset label="Square">
         <img src="<$mt:AssetURL$>" width="<$mt:AssetProperty property="image_width"$>" height="<$mt:AssetProperty property="image_height"$>" />
       <mt:Else>
-        <img src="<$mt:AssetThumbnailURL square="1" width="100"$>" />
+        <mt:PrototypeVar label="Square" property="max_width" setvar="width" />
+        <mt:PrototypeVar label="Square" property="max_height" setvar="height" />
+        <img src="<$mt:CropThumbnailURL width="$width" height="$height"$>" width="<$mt:Var name="width"$>" height="<$mt:Var name="height"$>" />
       </mt:CroppedAsset>
     </mt:Asset>
 
@@ -97,12 +99,38 @@ just that:
 
 ## Template Tags ##
 
-* `<$mt:CroppedAsset$>` - Places the desired cropped image asset
+* `<mt:CroppedAsset>` - Places the desired cropped image asset
   into context. This tag must be called with an existing asset
   (the parent asset) already in context. See example above. Allowable
   arguments:
 
   * `label` - The label to filter by.
+
+* `<$mt:ScaleThumbnailURL$>` - URL of scale image asset to max size. Allowable
+  arguments:
+
+  * `width` - maximum of image width.
+  * `height` - maximum of image height.
+
+* `<$mt:FillThumbnailURL$>` - URL of fill image asset to min size. Allowable
+  arguments:
+
+  * `width` - minimum of image width.
+  * `height` - minimum of image height.
+
+* `<$mt:CropThumbnailURL$>` - URL of crop image asset to size. Allowable
+  arguments:
+
+  * `width` - image width.
+  * `height` - image height.
+  * `align_x` - cutoff block (optional) as`left``center``right`.
+  * `align_y` - cutoff block (optional) as `top``center``bottom`.
+
+* `<$mt:PrototypeVar$>` - Return prototype value in custom prototypes. Allowable
+  arguments:
+
+  * `label` - label of prototype.
+  * `property` - property of prototype as `max_width``max_height`.
 
 ## Designer Guide ##
 

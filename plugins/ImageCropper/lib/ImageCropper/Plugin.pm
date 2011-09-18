@@ -110,6 +110,206 @@ sub complete_upload_wrapper {
     return;
 }
 
+sub hdlr_cropped_asset {
+    my ( $ctx, $args, $cond ) = @_;
+    my $label       = $args->{label};
+    my $asset       = $ctx->stash('asset')
+        or return $ctx->_no_asset_error();
+    my $blog    =  $ctx->stash('blog')
+                || MT->model('blog')->load( $asset->blog_id );
+    my $blog_id = defined $args->{blog_id}  ? $args->{blog_id}
+                : defined $asset->blog_id   ? $asset->blog_id
+                : ref $blog                 ? $blog->id 
+                : 0;
+    my $out;
+    my $cropped_asset = find_cropped_asset($blog_id,$asset,$label);
+    if ($cropped_asset) {
+        local $ctx->{__stash}{'asset'} = $cropped_asset;
+        defined( $out = $ctx->slurp( $args, $cond ) ) or return;
+        return $out;
+    }
+    return _hdlr_pass_tokens_else(@_);
+}
+
+sub _hdlr_pass_tokens_else {
+    my ( $ctx, $args, $cond ) = @_;
+    my $b = $ctx->stash('builder');
+    my $out;
+    defined( $out = $b->build( $ctx, $ctx->stash('tokens_else'), $cond ) )
+      or return $ctx->error( $b->errstr );
+    return $out;
+}
+
+sub hdlr_scale_thumbnail {
+    my ( $ctx, $args, $cond ) = @_;
+    my $asset = $ctx->stash('asset')
+      or return $ctx->_no_asset_error();
+    return $asset->url
+      if $args->{width} > $asset->image_width and $args->{height} > $asset->image_height;
+    my @url = $args->{height} / $asset->image_height < $args->{width} / $asset->image_width ? $asset->thumbnail_url( Height => $args->{height} )
+                                                                                            : $asset->thumbnail_url( Width => $args->{width} );
+    return $url[0];
+}
+
+sub hdlr_fill_thumbnail {
+    my ( $ctx, $args, $cond ) = @_;
+    my $asset = $ctx->stash('asset')
+      or return $ctx->_no_asset_error();
+    my @url = $args->{height} / $asset->image_height > $args->{width} / $asset->image_width ? $asset->thumbnail_url( Height => $args->{height} )
+                                                                                            : $asset->thumbnail_url( Width => $args->{width} );
+    return $url[0];
+}
+
+sub hdlr_crop_thumbnail {
+    my ( $ctx, $args, $cond ) = @_;
+    $args->{width} or return;
+    $args->{height} or return;
+    my $asset = $ctx->stash('asset')
+      or return $ctx->_no_asset_error();
+    my $blog = $ctx->stash('blog')
+      or return;
+    my ($width, $height, $X, $Y );
+    my $scalex = $args->{width} / $asset->image_width;
+    my $scaley = $args->{height} / $asset->image_height;
+    if ( $scaley > $scalex ) {
+        $width = $args->{width} / $scaley;
+        $height = $asset->image_height;
+        my $dw = $asset->image_width - $width;
+        if ( $args->{align_x} ) {
+            if ($args->{align_x} eq 'left') { $X = 0; }
+            if ($args->{align_x} eq 'center') { $X = $dw / 2; }
+            if ($args->{align_x} eq 'right') { $X = $dw; }
+        }
+        else {
+            $X = 0;
+        }
+        $Y = 0;
+    }
+    else {
+        $width = $asset->image_width;
+        $height = $args->{height} / $scalex;
+        my $dh = $asset->image_height - $height;
+        $X = 0;
+        if ( $args->{align_y} ) {
+            if ($args->{align_y} eq 'top') { $Y = 0; }
+            if ($args->{align_y} eq 'center') { $Y = $dh / 2; }
+            if ($args->{align_y} eq 'bottom') { $Y = $dh; }
+        }
+        else {
+            $Y = 0;
+        }
+    }
+    my $type = $asset->file_ext;
+    my $plugin = MT->component("ImageCropper");
+    my $scope  = "blog:" . $blog->id;
+    my $quality = $plugin->get_config_value( 'default_compress', $scope ) * 10 || '70';
+    require MT::Image;
+    my $img = MT::Image->new( Filename => $asset->file_path )
+      or MT->log( {
+            blog_id => $blog->id,
+            message => "Error loading image: " . MT::Image->errstr
+        }
+      );
+    my $data = crop_image(
+        $img,
+        Width   => $width,
+        Height  => $height,
+        X       => $X,
+        Y       => $Y,
+        Type    => $type,
+        quality => $quality,
+    );
+    $data = $img->scale(
+        Width  => $args->{width},
+        Height => $args->{height},
+    );
+    require MT::FileMgr;
+    my $fmgr = $blog ? $blog->file_mgr : MT::FileMgr->new('Local');
+    unless ($fmgr) {
+        MT->log( {
+                blog_id => $blog->id,
+                message => "Unable to initialize File Manager"
+            }
+        );
+        return undef;
+    }
+    my ( $cache_path, $cache_url );
+    my $archivepath = $blog->archive_path;
+    my $archiveurl  = $blog->archive_url;
+    $cache_path = $cache_url = $asset->_make_cache_path( undef, 1 );
+    $cache_path =~ s!%a!$archivepath!;
+
+    if ( $cache_path =~ /^%r/ ) {
+        my $site_path = $blog->site_path;
+        $cache_path =~ s/%r/$site_path/;
+    }
+    unless ( $fmgr->can_write($cache_path) ) {
+        MT->log( {
+                blog_id => $blog->id,
+                message => "Can't write to: $cache_path"
+            }
+        );
+        return undef;
+    }
+    my $error = '';
+    if ( !-d $cache_path ) {
+        require MT::FileMgr;
+        unless ( $fmgr->mkpath($cache_path) ) {
+            MT->log( {
+                    blog_id => $blog->id,
+                    message => "Can't mkpath: $cache_path"
+                }
+            );
+            return undef;
+        }
+    }
+    my $file    = $asset->file_name
+      or return;
+    $file =~ s/\.\w+$//;
+    require MT::Util;
+    my $base = File::Basename::basename($file);
+    my $ext = $asset->file_ext || '';
+    $ext = '.' . $ext;
+    my $cropped_file_name = '%f-crop-photo-%w-%h%x';
+    $cropped_file_name =~ s/%f/$base/g;
+    $cropped_file_name =~ s/%x/$ext/g;
+    $cropped_file_name =~ s/%w/$args->{width}/g;
+    $cropped_file_name =~ s/%h/$args->{height}/g;
+
+    $fmgr->put_data( $data,
+        File::Spec->catfile( $cache_path, $cropped_file_name ), 'upload' )
+      or $error =
+      MT->translate( "Error creating cropped file: [_1]", $fmgr->errstr );
+    my $cropped_url = caturl( $cache_url, $cropped_file_name );
+    $cropped_url =~ s{\\}{/}g;
+    if ( $cropped_url =~ /^%r/ ) {
+        my $site_url = $blog->site_url;
+        $site_url    =~ s{/?$}{/};
+        $cropped_url =~ s{%r/?}{$site_url};
+    }
+    return $cropped_url;
+}
+
+sub hdlr_var_prototype {
+    my ( $ctx, $args, $cond ) = @_;
+    $args->{property} or return;
+    $args->{label} or return;
+    my $blog = $ctx->stash('blog')
+      or return;
+    my @custom =
+      MT->model('thumbnail_prototype')->load( { blog_id => $blog->id } );
+    foreach (@custom) {
+        if ( $_->label eq $args->{label} ) {
+            if ( $args->{property} eq 'max_width' ) {
+                return $_->max_width;
+            }
+            if ( $args->{property} eq 'max_height' ) {
+                return $_->max_height;
+            }
+        }
+    }
+}
+
 sub del_prototype {
     my ($app) = @_;
     my $blog = $app->blog;
@@ -130,40 +330,6 @@ sub del_prototype {
     }
     $app->add_return_arg( prototype_removed => 1 );
     $app->call_return;
-}
-
-sub hdlr_cropped_asset {
-    my ( $ctx, $args, $cond ) = @_;
-    my $l       = $args->{label};
-
-    my $a       = $ctx->stash('asset')
-        or return $ctx->_no_asset_error();
-
-    my $blog    =  $ctx->stash('blog')
-                || MT->model('blog')->load( $a->blog_id );
-
-    my $blog_id = defined $args->{blog_id}  ? $args->{blog_id}
-                : defined $a->blog_id       ? $a->blog_id
-                : ref $blog                 ? $blog->id 
-                : 0;
-
-    my $out;
-    my $cropped_asset = find_cropped_asset($blog_id,$a,$l);
-    if ($cropped_asset) {
-        local $ctx->{__stash}{'asset'} = $cropped_asset;
-        defined( $out = $ctx->slurp( $args, $cond ) ) or return;
-        return $out;
-    }
-    return _hdlr_pass_tokens_else(@_);
-}
-
-sub _hdlr_pass_tokens_else {
-    my ( $ctx, $args, $cond ) = @_;
-    my $b = $ctx->stash('builder');
-    my $out;
-    defined( $out = $b->build( $ctx, $ctx->stash('tokens_else'), $cond ) )
-      or return $ctx->error( $b->errstr );
-    return $out;
 }
 
 sub save_prototype {
