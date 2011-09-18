@@ -181,7 +181,7 @@ sub hdlr_crop_thumbnail {
             if ($args->{align_x} eq 'right') { $X = $dw; }
         }
         else {
-            $X = 0;
+            $X = $dw / 2;
         }
         $Y = 0;
     }
