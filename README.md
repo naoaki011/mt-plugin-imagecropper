@@ -160,6 +160,9 @@ simple example:
           etc...
 
 example of define prototypes for MT5 theme via `config.yaml`.
+**Design > Crop Prototypes** screen for blogs using the corresponding
+theme MT5 or later.
+
 
     themes:
       mtVicunaSimple:
@@ -177,7 +180,7 @@ dimensions.
 
 ## This modified version of ImageCropper
 
-This modified version of Image Cropper for MT5 or later maintain by naoaki.onozaki.
+This modified version of Image Cropper for MT5 or later maintain by [naoaki.onozaki](https://github.com/naoaki011).
 
 Original version of Image Cropper created by Endevver, LLC.
 
