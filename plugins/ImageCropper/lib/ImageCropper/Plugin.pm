@@ -355,9 +355,17 @@ sub save_prototype {
     $obj->save or return $app->error( $obj->errstr );
 
     my $cgi = $app->{cfg}->CGIPath . $app->{cfg}->AdminScript;
-    $app->redirect( "$cgi?__mode=list_prototypes&blog_id="
+    if ( MT->version_id  >= 5.1 ) {
+        $app->redirect( "$cgi?__mode=list&_type=thumbnail_prototype&blog_id="
           . $q->param('blog_id')
           . "&prototype_saved=1" );
+    }
+    else {
+        $app->redirect( "$cgi?__mode=list_prototypes&blog_id="
+          . $q->param('blog_id')
+          . "&prototype_saved=1" );
+    }
+
 }
 
 sub edit_prototype {

@@ -72,7 +72,7 @@ applications:
         view:
           - blog
           - website
-        condition: $AssetHandler::AssetHandler::Util::is_mt5
+        condition: $ImageCropper::ImageCropper::Util::is_mt5
       design:crop_prototypes:
         label: Crop Prototypes
         mode: list
@@ -83,7 +83,7 @@ applications:
         view:
           - blog
           - website
-        condition: $AssetHandler::AssetHandler::Util::is_illiad
+        condition: $ImageCropper::ImageCropper::Util::is_illiad
     methods:
       list_prototypes: $ImageCropper::ImageCropper::Plugin::list_prototypes
       edit_prototype: $ImageCropper::ImageCropper::Plugin::edit_prototype
@@ -100,13 +100,6 @@ applications:
           mode: manage_thumbnails
           permission: upload
           condition: $ImageCropper::ImageCropper::Util::asset_is_image
-    contents_actions:
-      thumbnail_prototype:
-        create_prototype:
-          class: mt-open-dialog icon-left icon-create icon-action
-          label: Create Crop Prototype
-          mode: edit_prototype
-          order: 200
 listing_screens:
   thumbnail_prototype:
     object_label: Crop Prototype
@@ -171,3 +164,10 @@ list_actions:
       order: 100
       js_message: delete
       button: 1
+content_actions:
+  thumbnail_prototype:
+    create_prototype:
+      class: icon-create mt-open-dialog
+      label: Create Crop Prototype
+      mode: edit_prototype
+      order: 200
