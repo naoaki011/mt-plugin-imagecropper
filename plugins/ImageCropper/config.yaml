@@ -282,7 +282,7 @@ list_properties:
                 my $thumbnail_height_offset = int(
                   ( $thumb_size - $thumbnail_height ) / 2 );
                 my $out;
-                if (!$parent) {
+                if ((!$parent)&&($class_type eq 'image')) {
                   $out = qq{
                     <span class="title"><a href="$edit_link">$label</a></span>$userpic_sticker
                     <span class="view">&nbsp;<a href="$url"><img src="$view_img" alt="$view" /></a></span>
@@ -353,12 +353,13 @@ list_properties:
             },
           );
           my $id = $obj->parent;
+          my $class_type = $obj->class_type;
           my $crop = MT->translate('Crop');
           my $crop_img = MT->static_path . 'plugins/ImageCropper/images/crop.gif';
           my $out = qq {
             <span><a href="$editpath">$id</a></span><span class="crop">&nbsp;<a href="$croppath"><img src="$crop_img" alt="$crop" /></a></span>
           };
-          $out = '-' if (!$id);
+          $out = '-' if ((!$id)||($class_type ne 'image'));
           return $out;
         }
 list_actions:
