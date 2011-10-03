@@ -144,6 +144,7 @@ sub hdlr_scale_thumbnail {
     my ( $ctx, $args, $cond ) = @_;
     my $asset = $ctx->stash('asset')
       or return $ctx->_no_asset_error();
+    return if ($asset->class ne 'image');
     return $asset->url
       if $args->{width} > $asset->image_width and $args->{height} > $asset->image_height;
     my @url = $args->{height} / $asset->image_height < $args->{width} / $asset->image_width ? $asset->thumbnail_url( Height => $args->{height} )
@@ -155,6 +156,7 @@ sub hdlr_fill_thumbnail {
     my ( $ctx, $args, $cond ) = @_;
     my $asset = $ctx->stash('asset')
       or return $ctx->_no_asset_error();
+    return if ($asset->class ne 'image');
     my @url = $args->{height} / $asset->image_height > $args->{width} / $asset->image_width ? $asset->thumbnail_url( Height => $args->{height} )
                                                                                             : $asset->thumbnail_url( Width => $args->{width} );
     return $url[0];
@@ -168,6 +170,7 @@ sub hdlr_crop_thumbnail {
       or return $ctx->_no_asset_error();
     my $blog = $ctx->stash('blog')
       or return;
+    return if ($asset->class ne 'image');
     my ($width, $height, $X, $Y );
     my $scalex = $args->{width} / $asset->image_width;
     my $scaley = $args->{height} / $asset->image_height;
