@@ -105,7 +105,7 @@ listing_screens:
     object_label: Crop Prototype
     object_label_plural: Crop Prototypes
     primary: label
-    screen_label: Prototypes
+    screen_label: Crop Prototypes
     default_sort_key: label
     view:
       - blog
@@ -123,17 +123,21 @@ list_properties:
       auto: 1
       order: 200
       display: force
-      html_link: >
+      html: >
         sub {
-          my $prop = shift;
-          my ( $obj, $app, $opts ) = @_;
-          return $app->uri(
+          my ($prop, $obj, $app) = @_;
+          my $editpath = $app->uri(
             mode => 'edit_prototype',
             args => {
               id => $obj->id,
-              blog_id => $opts->{blog_id} || 0,
+              blog_id => $obj->blog_id,
             },
           );
+          my $label = $obj->label;
+          my $out = qq {
+            <span><a href="$editpath">$label</a></span>
+          };
+          return $out;
         }
     max_width:
       label: Max Width
