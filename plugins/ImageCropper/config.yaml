@@ -286,7 +286,7 @@ list_properties:
                 my $thumbnail_height_offset = int(
                   ( $thumb_size - $thumbnail_height ) / 2 );
                 my $out;
-                if ((!$parent)&&($class_type eq 'image')) {
+                if ((!$parent)&&($class_type eq 'image')&&($obj->blog_id)) {
                   $out = qq{
                     <span class="title"><a href="$edit_link">$label</a></span>$userpic_sticker
                     <span class="view">&nbsp;<a href="$url"><img src="$view_img" alt="$view" /></a></span>
