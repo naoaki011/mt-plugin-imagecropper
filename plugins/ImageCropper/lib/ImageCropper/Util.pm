@@ -125,7 +125,7 @@ sub find_prototype_id {
     my ( $ts, $label ) = @_;
     return undef unless $ts;
     my $protos;
-    if ( MT->version_id  < 5 ) {
+    if ( MT->version_number  < 5 ) {
         $protos = MT->registry('template_sets')->{$ts}->{thumbnail_prototypes};
     }
     else {
@@ -174,9 +174,8 @@ sub find_cropped_asset {
 
 sub asset_is_image {
     my $asset = shift;
-    my $class = $asset->class;
-    my $parent = $asset->parent;
-    if (($class eq 'image')&&($parent eq '')) {
+    my $parent = $asset->parent || '';
+    if (($asset->class eq 'image')&&($parent eq '')) {
         return 1;
     } else {
         return 0;
@@ -200,7 +199,7 @@ sub is_user_can {
 }
 
 sub is_mt5 {
-    my $version = MT->version_id;
+    my $version = MT->version_number;
     if (($version < 5.1)&&($version >= 5)) {
         return 1;
     }
@@ -210,7 +209,7 @@ sub is_mt5 {
 }
 
 sub is_illiad {
-    my $version = MT->version_id;
+    my $version = MT->version_number;
     if ($version >= 5.1) {
         return 1;
     }

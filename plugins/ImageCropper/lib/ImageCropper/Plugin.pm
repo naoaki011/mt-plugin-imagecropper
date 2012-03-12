@@ -636,9 +636,9 @@ sub gen_thumbnails_start {
     $param->{annotation}      = $cropped_text    ? $cropped_text
                                                  : $default_text;
     $param->{annotation_size} = $annotation_size ? $annotation_size
-                                                                                        : '10';
+                                                 : '10';
     $param->{default_qualty}  = $default_qualty  ? $default_qualty
-                                                                                       : '7';
+                                                 : '7';
 
     my $tmpl = $app->load_tmpl( 'start.tmpl', $param );
     my $ctx = $tmpl->context;

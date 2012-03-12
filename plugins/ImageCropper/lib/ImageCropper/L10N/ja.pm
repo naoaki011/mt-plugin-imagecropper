@@ -57,7 +57,7 @@ use vars qw( %Lexicon );
 		=> 'Enter in a very short label that will be used to help you identify any thumbnail derived from this prototype.',
 	'Enter in the max width of the thumbnail.' => 'Enter in the max width of the thumbnail.',
 	'Enter in the max height of the thumbnail.' => 'Enter in the max height of the thumbnail.',
-
+	
 );
 
 1;
