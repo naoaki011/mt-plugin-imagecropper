@@ -1,12 +1,12 @@
 id: ImageCropper
 name: Image Cropper
 description: <__trans phrase="Allows users to define a set of thumbnail prototypes that others can easily generate using a drag-and-drop image cropping tool.">
-version: 1.0.24 kmatsumoto 0.1
+version: 1.0.25
 schema_version: 8
 l10n_class: ImageCropper::L10N
-author_name: naoaki.onozaki / Customed by Koji Matsumoto.
-author_link: http://www.zelazny.mydns.jp/
-plugin_link: https://github.com/naoaki011/mt-plugin-imagecropper
+author_name: Koji Matsumoto.
+author_link: http://www.km92.net/knowledge/
+plugin_link: https://github.com/km000/mt-plugin-imagecropper
 
 callbacks:
     MT::App::CMS::init_app: $ImageCropper::ImageCropper::Plugin::init_app

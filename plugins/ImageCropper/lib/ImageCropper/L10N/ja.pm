@@ -1,11 +1,9 @@
 package ImageCropper::L10N::ja;
 
 use strict;
-#>>ewm_kmatsumoto140629_1642
 #use base 'AssetHandler::L10N::en_us';
 #use base 'ImageCropper::L10N::en_us';
 use base 'ImageCropper::L10N::en_us';
-#<<ewm_kmatsumoto140629_1642
 use vars qw( %Lexicon );
 
 ## The following is the translation table.
