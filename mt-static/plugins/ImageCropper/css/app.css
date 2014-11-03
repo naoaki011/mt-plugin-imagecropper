@@ -72,6 +72,7 @@ h3 {
   vertical-align: middle;
 }
 #prototypes li .proto_info {
+  width: 175px; /*kmatsumoto140703_1436*/
   text-align: center;
   font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
 }
@@ -94,7 +95,10 @@ div.scrollable {
     position:relative; 
     overflow:hidden;          
     width:765px;
-    height:188px; 
+/*>>kmatsumoto140703_1436
+    height:188px; */
+    height:200px;
+/*<<kmatsumoto140703_1436*/
     margin-left: 20px;
 } 
 a.next { margin-top: 70px; margin-left: 5px; position: absolute; right: -5px; }

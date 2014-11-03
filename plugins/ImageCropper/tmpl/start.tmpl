@@ -1,15 +1,23 @@
 <mt:setvarblock name="page_title"><__trans phrase="Create Thumbnail for [_1]" params="<$mt:var name="asset_label" encode_html="1"$>"></mt:setvarblock>
 
-<mt:setvarblock name="html_head" append="1">
+<mt:setvarblock name="js_include" append="1">
+<mt:ignore>kmatsumoto140630_1107:old.
     <script src="<mt:StaticWebPath>jqueryui/ui.core.js"></script>
     <script src="<mt:StaticWebPath>jqueryui/ui.dialog.js"></script>
     <script src="<mt:StaticWebPath>jqueryui/ui.resizable.js"></script>
     <script src="<mt:StaticWebPath>jqueryui/ui.draggable.js"></script>
+</mt:ignore>
+<mt:ignore>kmatsumoto140630_1107:new.</mt:ignore>
+    <script src="<mt:StaticWebPath>plugins/ImageCropper/js/ui.core.js"></script>
+    <script src="<mt:StaticWebPath>plugins/ImageCropper/js/ui.dialog.js"></script>
+    <script src="<mt:StaticWebPath>plugins/ImageCropper/js/ui.resizable.js"></script>
+    <script src="<mt:StaticWebPath>plugins/ImageCropper/js/ui.draggable.js"></script>
+<mt:ignore>kmatsumoto140630_1107:end.</mt:ignore>
     <script src="<mt:StaticWebPath>plugins/ImageCropper/js/jquery.dimensions.js"></script>
     <script src="<mt:StaticWebPath>plugins/ImageCropper/js/jquery.scrollable-1.0.1.min.js"></script>
     <script src="<mt:StaticWebPath>plugins/ImageCropper/js/jquery.scrollTo.min.js"></script>
     <script src="<mt:StaticWebPath>plugins/ImageCropper/js/jquery.Jcrop.js"></script>
-    <script src="<mt:StaticWebPath>jqueryui/ui.datepicker.js"></script>
+<mt:ignore>    <script src="<mt:StaticWebPath>jqueryui/ui.datepicker.js"></script></mt:ignore>
     <script src="<mt:StaticWebPath>jquery/jquery.mt.js"></script>
     <script type="text/javascript">
     var coords;
@@ -163,6 +171,7 @@
             accesskey="s"
             title="<__trans phrase="Return to the asset editing screen">"
             onclick="location.href = '?__mode=view&_type=asset&id=<$mt:AssetID$>&blog_id=<$mt:BlogID$>';"><__trans phrase="Return to asset"></button>
+<mt:ignore>
 <mt:if name="has_prototypes">
         <button
             style="float: right"
@@ -171,6 +180,7 @@
             title="<__trans phrase="Edit Prototypes">"
             onclick="location.href = '?__mode=list_prototypes&blog_id=<$mt:var name="blog_id"$>';"><__trans phrase="Edit Prototypes"></button>
 </mt:if>
+</mt:ignore>
       </div>
     </div>
 
@@ -265,7 +275,7 @@
 <mtapp:setting
     id="type"
     label="<__trans phrase="Thumbnail Image Type">"
-    hint="non-functional right now"
+    hint=""
     show_hint="1">
        <select name="type">
          <option value="jpg" selected>JPEG</option>
