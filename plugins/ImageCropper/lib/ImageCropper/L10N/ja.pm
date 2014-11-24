@@ -1,9 +1,7 @@
 package ImageCropper::L10N::ja;
 
 use strict;
-#use base 'AssetHandler::L10N::en_us';
-#use base 'ImageCropper::L10N::en_us';
-use base 'ImageCropper::L10N::en_us';
+use base 'AssetHandler::L10N::en_us';
 use vars qw( %Lexicon );
 
 ## The following is the translation table.
@@ -12,7 +10,7 @@ use vars qw( %Lexicon );
 	'Allows users to define a set of thumbnail prototypes that others can easily generate using a drag-and-drop image cropping tool.'
 		=> 'ユーザーがサムネイルのひな型を作成でき、そのひな型をを使いドラッグドロップにより画像の切り取りが可能になります。',
 	'Thumbnail Prototype' => 'サムネイルのひな型',
-	'Thumbnail Prototypes' => 'サムネイルのひな型の一覧',
+	'Thumbnail Prototypes' => 'サムネイルのひな型',
 	'Generate Thumbnails' => 'カスタムサムネイルを作成',
 	'Create Crop Prototype' => 'サムネイルのひな型を作成',
 	'Crop Prototype' => 'サムネイルのひな型',
@@ -26,20 +24,20 @@ use vars qw( %Lexicon );
 	'Annotation FontFamily' => '注釈のフォント',
 	'Annotation FontSize' => '注釈のフォントサイズ',
 	'A new Thumbnail Prototype has been successfully created.' => 'サムネイルのひな型は正常に作成されました。',
-	'The selected protype(s) have been deleted.' => 'サムネイルのひな型正常に削除されました。',
+	'The selected protype(s) have been deleted.' => 'サムネイルのひな型が正常に削除されました。',
 	'Delete selected prototypes (d)' => '選択したサムネイルのひな型は削除されました。',
-	'Custom Thumbnail Prototypes' => 'サムネイルのひな型の編集',
-	'Create Thumbnail Prototype' => 'サムネイルのひな型の作成',
+	'Custom Thumbnail Prototypes' => 'サムネイルのひな型を編集',
+	'Create Thumbnail Prototype' => 'サムネイルのひな型を作成',
 	'No custom thumbnail prototypes could be found.' => 'サムネイルのひな型は作成されていません。',
-	'Thumbnail Prototypes for [_1]' => '[_1] のサムネイルのひな型',
-	'Create Thumbnail for [_1]' => '[_1]のサムネイルの作成',
+	'Thumbnail Prototypes for [_1]' => '[_1] のサムネイルひな型',
+	'Create Thumbnail for [_1]' => '[_1]のサムネイルを作成',
 	'You have no thumbnail prototypes defined. Please <a href="[_1]">create some thumbnail prototypes</a>.'
 		=>'サムネイルのひな型が定義されていません。. <a href="[_1]">サムネイルのひな型の作成</a>を押してください。',
 	'Return to the asset editing screen' => 'アイテムの編集画面に戻る',
-	'Edit Prototypes' => 'サムネイルのひな型を作成する',
-	'Return to asset' => '「アイテムの編集」画面に戻る',
-	'Return to Listing' => '「アイテムの管理」画面に戻る',
-	'Return to the asset listing screen' => '「アイテムの管理」画面に戻る',
+	'Edit Prototypes' => 'サムネイルのひな型を編集する',
+	'Return to asset' => 'アイテムの編集画面に戻る',
+	'Return to Listing' => 'アイテムの一覧画面に戻る',
+	'Return to the asset listing screen' => 'アイテムの一覧画面に戻る',
 	'Select a Thumbnail Prototype' => 'サムネイルのひな型を選択する',
 	'Select your crop area' => 'トリミングの範囲を選択する',
 	'Select additional crop options' => '必要に応じてトリミングの拡張設定を行う',
@@ -57,11 +55,11 @@ use vars qw( %Lexicon );
 	'Thumbnail Image Type' => '画像の保存形式',
 	'Thumbnail Quality' => '画像の品質',
 	'Crop' => 'トリミングする',
-	'Edit Thumbnail Prototype' => 'サムネイルのひな型の作成',
+	'Edit Thumbnail Prototype' => 'サムネイルのひな型を編集',
 	'Enter in a very short label that will be used to help you identify any thumbnail derived from this prototype.'
 		=> 'Enter in a very short label that will be used to help you identify any thumbnail derived from this prototype.',
-	'Enter in the max width of the thumbnail.' => 'サムネイルの最大幅を入力してください。',
-	'Enter in the max height of the thumbnail.' => 'サムネイルの最大縦幅を入力してください。',
+	'Enter in the max width of the thumbnail.' => 'サムネイルの幅を入力してください。',
+	'Enter in the max height of the thumbnail.' => 'サムネイルの高さを入力してください。',
 	
 );
 

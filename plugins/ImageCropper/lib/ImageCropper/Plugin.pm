@@ -422,7 +422,7 @@ sub load_ts_prototypes {
     my $app  = shift;
     my $blog = $app->blog;
     my @protos;
-    if ( MT->version_id  < 5 ) {
+    #if ( MT->version_id  < 5 ) {
         if ( $blog->template_set ) {
             my $ts = $blog->template_set;
             my $ps =
@@ -441,27 +441,30 @@ sub load_ts_prototypes {
                   };
             }
         }
-    }
-    else {
-        if ( $blog->theme_id ) {
-            my $tm = $blog->theme_id;
-            my $ps =
-              $app->registry('themes')->{$tm}->{thumbnail_prototypes};
-            foreach ( keys %$ps ) {
-                my $p = $ps->{$_};
-                push @protos,
-                  { id           => $_,
-                    type         => 'template_set',
-                    key          => "$tm::$_",
-                    template_set => $tm,
-                    blog_id      => $blog->id,
-                    label        => &{ $p->{label} },
-                    max_width    => $p->{max_width},
-                    max_height   => $p->{max_height},
-                  };
-            }
-        }
-    }
+    #}
+    #else {
+    #    if ( $blog->theme_id ) {
+    #        MT->log('LIST');
+    #        my $tm = $blog->theme_id;
+    #        use Data::Dumper;
+    #        MT->log( Dumper( $app->registry('themes')->{$tm} ) );
+    #        my $ps =
+    #          $app->registry('themes')->{$tm}->{data}->{thumbnail_prototypes};
+    #        foreach ( keys %$ps ) {
+    #            my $p = $ps->{$_};
+    #            push @protos,
+    #              { id           => $_,
+    #                type         => 'template_set',
+    #                key          => "$tm::$_",
+    #                template_set => $tm,
+    #                blog_id      => $blog->id,
+    #                label        => &{ $p->{label} },
+    #                max_width    => $p->{max_width},
+    #                max_height   => $p->{max_height},
+    #              };
+    #        }
+    #    }
+    #}
     return \@protos;
 }
 
@@ -475,24 +478,28 @@ sub list_prototypes {
     if (! is_user_can( $blog, $user, 'edit_templates' ) ) {
         return MT->translate( 'Permission denied.' );
     }
+    my $cgi = $app->{cfg}->CGIPath . $app->{cfg}->AdminScript;
+    if ( MT->version_id  >= 5 ) {
+        $app->redirect( "$cgi?__mode=list&_type=thumbnail_prototype&blog_id="
+          . $blog->id );
+    }
+
     my ($params) = @_ || {};
     my $q = $app->can('query') ? $app->query : $app->param;
-    if ( MT->version_id  < 5 ) {
-        if ( $blog && $app->blog->template_set ) {
-            my $loop = load_ts_prototypes($app);
-            $params->{prototype_loop} = $loop;
-            $params->{template_set_name} =
-              $app->registry('template_sets')->{ $blog->template_set }->{label};
-        }
+    my $plugin = MT->component('ImageCropper');
+
+    if ( $blog && $app->blog->template_set ) {
+        my $loop = load_ts_prototypes($app);
+        $params->{prototype_loop} = $loop;
+        $params->{template_set_name} =
+          $app->registry('template_sets')->{ $blog->template_set }->{label};
     }
-    else {
-        if ( $blog && $app->blog->theme_id ) {
-            my $loop = load_ts_prototypes($app);
-            $params->{prototype_loop} = $loop;
-            $params->{template_set_name} =
-              $app->registry('themes')->{ $blog->theme_id }->{label};
-        }
-    }
+    #if ( $blog && $app->blog->theme_id ) {
+    #    my $loop = load_ts_prototypes($app);
+    #    $params->{prototype_loop} = $loop;
+    #    $params->{template_set_name} =
+    #      $app->registry('themes')->{ $blog->theme_id }->{label};
+    #}
     $params->{prototype_saved} = $q->param('prototype_saved');
     $params->{screen_id}       = 'list-prototypes';
 
@@ -520,8 +527,6 @@ sub list_prototypes {
           relative_date( $ts, time, $app->blog ? $app->blog : undef );
         $row->{created_on_formatted} = $time_formatted;
     };
-
-    my $plugin = MT->component('ImageCropper');
 
     $app->listing( {
             type  => 'thumbnail_prototype',
